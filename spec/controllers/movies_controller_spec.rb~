@@ -1,0 +1,65 @@
+require 'spec_helper'
+
+describe MoviesController do
+
+  before :each do
+    @fake_results = [double('movie1'), double('movie2')]
+  end
+
+  describe 'searching TMDb' do
+
+
+    it 'should call the model method that performs TMDb search' do
+      Movie.should_receive(:find_in_tmdb).with('Ted').and_return(@fake_results)
+      post :search_tmdb, {:search_terms => 'Ted'}
+    end
+
+    it 'should select the Search Results template for rendering' do
+      Movie.stub(:find_in_tmbd).and_return(@fake_results)
+      post :search_tmdb, {:search_terms => 'Ted'}
+      response.should render_template('search_tmdb')
+    end
+
+    it 'should make the TMDb search results available to that template' do
+      Movie.stub(:find_in_tmdb).and_return(@fake_results)
+      post :search_tmdb, {:search_terms => 'Ted'}
+      assigns(:movies).should == @fake_results
+    end
+ 
+    it 'should have an empty array when no movies match the search' do
+      post :search_tmdb, {:search_terms => 'This movies does not exist!!'} #search for a non-existant movie
+      assigns(:movies).should == [] #empty array
+    end
+
+    it 'should not search if there is an invalid search term' do
+      post :search_tmdb, {:search_terms => ''} #invalid search
+      assigns(:movies).should == nil #no search, so nil search results
+    end
+
+  end #end 'searching TMDb'
+
+
+  describe 'adding movies from TMDb' do #unfinished
+
+    it 'should get a hash of tmdb movies' do
+      MoviesController.should_receive(:add_tmdb).with(nil).and_return(@fake_results)
+      assigns(@movies_to_add).should be_a Hash
+    end
+
+    it 'should call the model method to create each movie' do
+      Movie.all.size.should == 0 #should be 0 movies in db
+      Movie.create_from_tmdb(72105) #call model method to add Ted
+      Movie.all.size.should == 1 #should be 1 movie in db now
+    end
+
+    it 'should go back to main page' do
+      
+      #response.should render_template("")
+    end
+
+
+
+  end #end 'adding movies from TMDb'
+
+
+end
