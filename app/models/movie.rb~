@@ -11,8 +11,6 @@ class Movie < ActiveRecord::Base
 
   end
 
-
-
   def self.create_from_tmdb(tmdb_id) #model method to add movie to database
     tmdb_movie = Tmdb::Movie.detail(tmdb_id) #get details of tmdb movie with id tmdb_id
  

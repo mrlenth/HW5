@@ -88,6 +88,7 @@ class MoviesController < ApplicationController
 
 
   def add_tmdb #method to add movies to tmdb
+
     @movies_to_add = (params[:tmdb_movies])
     
     if @movies_to_add == nil

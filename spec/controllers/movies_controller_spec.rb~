@@ -2,15 +2,14 @@ require 'spec_helper'
 
 describe MoviesController do
 
-  before :each do
-    @fake_results = [double('movie1'), double('movie2')]
-  end
-
   describe 'searching TMDb' do
 
+    before :each do
+      @fake_results = [double('movie1'), double('movie2')]
+    end
 
     it 'should call the model method that performs TMDb search' do
-      Movie.should_receive(:find_in_tmdb).with('Ted').and_return(@fake_results)
+      Movie.should_receive(:find_in_tmdb).with('Ted')
       post :search_tmdb, {:search_terms => 'Ted'}
     end
 
@@ -36,30 +35,36 @@ describe MoviesController do
       assigns(:movies).should == nil #no search, so nil search results
     end
 
+
   end #end 'searching TMDb'
 
+  describe 'adding TMDb' do
 
-  describe 'adding movies from TMDb' do #unfinished
-
-    it 'should get a hash of tmdb movies' do
-      MoviesController.should_receive(:add_tmdb).with(nil).and_return(@fake_results)
-      assigns(@movies_to_add).should be_a Hash
+    before :each do
+      Movie.stub(:create_from_tmdb)
     end
 
-    it 'should call the model method to create each movie' do
-      Movie.all.size.should == 0 #should be 0 movies in db
-      Movie.create_from_tmdb(72105) #call model method to add Ted
-      Movie.all.size.should == 1 #should be 1 movie in db now
+    it 'should call the model method to create movies' do
+      Movie.stub(:create_from_tmdb)
+      to_add = Hash['72105', '1']
+      post :add_tmdb, {:tmdb_movies => to_add}
     end
 
-    it 'should go back to main page' do
-      
-      #response.should render_template("")
+    it 'should redirect to main page' do
+      Movie.stub(:create_from_tmdb)
+      to_add = Hash['72105', '1']
+      post :add_tmdb, {:tmdb_movies => to_add}
+      response.should redirect_to(movies_path)
     end
 
+    it 'should not add no movies are selected' do
+      Movie.stub(:create_from_tmdb)
+      to_add = nil
+      post :add_tmdb, {:tmdb_movies => to_add}
+      response.should redirect_to(movies_path)
+    end
 
-
-  end #end 'adding movies from TMDb'
+  end #end 'adding TMDb'
 
 
 end

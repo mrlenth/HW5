@@ -88,7 +88,10 @@ class MoviesController < ApplicationController
 
 
   def add_tmdb #method to add movies to tmdb
+
     @movies_to_add = (params[:tmdb_movies])
+  
+    puts @movies_to_add
     
     if @movies_to_add == nil
       flash[:notice] = "No movies were selected."
